@@ -59,6 +59,9 @@ terminal="$TERM"
 ## Number of packages installed via Homebrew
 packages="`brew list -l | wc -l | awk '{print $1 }'`"
 
+## Model
+model=$(sysctl hw.model | awk '{print substr($0, index($0, $2))}')
+
 ## CPU Type
 cputype=`system_profiler | grep "Processor Name" | awk NR==1'{print substr($0, index($0, $3))}'`
 cpufreq=`system_profiler | grep "Processor Speed" | awk NR==1'{print substr($0, index($0, $3))}'`
@@ -67,7 +70,7 @@ cpufreq=`system_profiler | grep "Processor Speed" | awk NR==1'{print substr($0, 
 mem=`system_profiler | grep "Memory" | awk NR==1'{print substr($0, index($0, $2))}'`
 
 ## Disk usage
-disk=`df | head -2 | tail -1 | awk '{print $5}'`
+disk=`df -h | head -2 | tail -1 | awk '{print $4, "free of " $2"\, " $5}'`
 
 # Colors Variables
 red="1"
@@ -96,10 +99,11 @@ userText="${textColor}User:${normal}"
 hostnameText="${textColor}Hostname:${normal}"
 VersionText="${textColor}Version:${normal}"
 kernelText="${textColor}Kernel:${normal}"
+modelText="${textColor}Model:${normal}"
 uptimeText="${textColor}Uptime:${normal}"
 shellText="${textColor}Shell:${normal}"
 terminalText="${textColor}Terminal:${normal}"
-packagehandlerText="${textColor}Packages:${normal}"
+packagesText="${textColor}Packages:${normal}"
 cpuText="${textColor}CPU:${normal}"
 memoryText="${textColor}Memory:${normal}"
 diskText="${textColor}Disk:${normal}"
@@ -107,15 +111,15 @@ ipText="${textColor}Internal IP:${normal}"
 
 echo -e "
 
-${GREEN}                 ###
-${GREEN}               ####                   $userText $user
-${GREEN}               ###                    $hostnameText $hostname
-${GREEN}       #######    #######             $VersionText $version $versionString
-${YELLOW}     ######################           $kernelText $kernel
-${YELLOW}    #####################             $uptimeText $uptime
-${RED}    ####################              $shellText $shell
+${GREEN}                 ###                  $userText $user
+${GREEN}               ####                   $hostnameText $hostname
+${GREEN}               ###                    $VersionText $version $versionString
+${GREEN}       #######    #######             $kernelText $kernel
+${YELLOW}     ######################           $uptimeText $uptime
+${YELLOW}    #####################             $shellText $shell
 ${RED}    ####################              $terminalText $terminal
-${RED}    #####################             $packagehandlerText $packages
+${RED}    ####################              $packagesText $packages
+${RED}    #####################             $modelText $model
 ${PURPLE}     ######################           $cpuText $cputype "@" $cpufreq
 ${PURPLE}      ####################            $memoryText $mem
 ${BLUE}        ################              $diskText $disk
